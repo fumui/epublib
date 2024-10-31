@@ -2,6 +2,8 @@ import { FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import { Container, TextField, Button, Typography, Link, Box } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { useAuth } from '../context/AuthContext';
+import withAuth from '../hoc/withAuth';
 
 const useStyles = makeStyles({
   container: {
@@ -41,9 +43,10 @@ const useStyles = makeStyles({
   },
 })
 
-export default function LoginPage() {
+const LoginPage = () => {
   const classes = useStyles()
   const router = useRouter()
+  const { login } = useAuth();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -59,11 +62,13 @@ export default function LoginPage() {
     })
 
     if (response.ok) {
-      router.push('/dashboard')
+      const res = await response.json();
+      login(res.data?.token, email as string);
+      router.push('/dashboard');
     } else if (response.status === 401) {
-      alert('Invalid email or password')
+      alert('Invalid email or password');
     } else {
-      alert('An error occurred')
+      alert('An error occurred');
     }
   }
 
@@ -112,3 +117,5 @@ export default function LoginPage() {
     </Container>
   )
 }
+
+export default withAuth(LoginPage);

@@ -3,6 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, CssBaseline, Box, AppBar, Toolbar, IconButton } from '@mui/material';
 import { Dashboard as DashboardIcon, MenuBook as MenuBookIcon, People as PeopleIcon, BarChart as BarChartIcon, Menu as MenuIcon } from '@mui/icons-material';
+import withAuth from '../hoc/withAuth';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -123,24 +124,6 @@ const Dashboard: React.FC = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
         <Typography variant="h4" gutterBottom>Book Rental Dashboard</Typography>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-          <Box sx={{ flex: '1 1 60%' }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Monthly Revenue and Operational Costs</Typography>
-                <Line data={combinedRevenueCostData} />
-              </CardContent>
-            </Card>
-          </Box>
-          <Box sx={{ flex: '1 1 35%' }}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Monthly Books Rented and Customer Gains</Typography>
-                <Line data={combinedBooksRentedCustomerGainsData} />
-              </CardContent>
-            </Card>
-          </Box>
-        </Box>
         <TableContainer component={Paper} style={{ marginTop: '20px' }}>
           <Table>
             <TableHead>
@@ -165,9 +148,27 @@ const Dashboard: React.FC = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop:'20px' }}>
+          <Box sx={{ flex: '1 1 45%' }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Monthly Revenue and Operational Costs</Typography>
+                <Line data={combinedRevenueCostData} />
+              </CardContent>
+            </Card>
+          </Box>
+          <Box sx={{ flex: '1 1 45%' }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">Monthly Books Rented and Customer Gains</Typography>
+                <Line data={combinedBooksRentedCustomerGainsData} />
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
 };
 
-export default Dashboard;
+export default withAuth(Dashboard);

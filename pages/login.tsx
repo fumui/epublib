@@ -22,8 +22,12 @@ const LoginPage = () => {
 
     if (response.ok) {
       const res = await response.json();
-      login(res.data?.token, email as string);
-      router.push('/');
+      login(res.data?.token, email as string, res.data?.level);
+      if (res.data?.level == "Admin"){
+        router.push("/dashboard")
+      } else{
+        router.push("/")
+      }
     } else if (response.status === 401) {
       alert('Invalid email or password');
     } else {

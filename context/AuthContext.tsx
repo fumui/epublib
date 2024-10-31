@@ -3,7 +3,8 @@ import React, { createContext, useState, useEffect, ReactNode } from 'react';
 interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
-  login: (token: string, email: string) => void;
+  isAdmin: boolean;
+  login: (token: string, email: string, level: string) => void;
   logout: () => void;
 }
 
@@ -11,6 +12,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -18,23 +20,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (token) {
       setIsAuthenticated(true);
     }
+    const level = localStorage.getItem('level');
+    if (level && level == "Admin") {
+      setIsAdmin(true);
+    }
     setLoading(false);
   }, []);
 
-  const login = (token: string, email: string) => {
+  const login = (token: string, email: string, level: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('email', email);
+    localStorage.setItem('level', level);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('email');
+    localStorage.removeItem('level');
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isAdmin, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

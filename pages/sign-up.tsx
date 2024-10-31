@@ -29,7 +29,7 @@ const SignUpPage = () => {
 
     if (response.ok) {
       const res = await response.json();
-      login(res.data?.token, email as string);
+      login(res.data?.token, email as string, res.data?.level);
       router.push('/');
     } else {
       alert('An error occurred');

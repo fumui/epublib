@@ -2,7 +2,7 @@ import { useAuth } from '../context/AuthContext'; // Adjust the import path as n
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-const withAuth = (WrappedComponent: React.FC) => {
+const withAdmin = (WrappedComponent: React.FC) => {
   return (props: any) => {
     const { isAuthenticated, isAdmin, loading } = useAuth();
     const router = useRouter();
@@ -10,6 +10,9 @@ const withAuth = (WrappedComponent: React.FC) => {
     useEffect(() => {
       if (!loading && !isAuthenticated) {
         router.push('/login');
+      }
+      if (!loading && !isAdmin){
+        router.push('/');
       }
     }, [isAuthenticated, isAdmin, loading, router]);
 
@@ -25,4 +28,4 @@ const withAuth = (WrappedComponent: React.FC) => {
   };
 };
 
-export default withAuth;
+export default withAdmin;

@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, CssBaseline, Box, AppBar, Toolbar, IconButton } from '@mui/material';
-import { Dashboard as DashboardIcon, MenuBook as MenuBookIcon, People as PeopleIcon, BarChart as BarChartIcon, Menu as MenuIcon } from '@mui/icons-material';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Card, CardContent, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, CssBaseline, Box, AppBar, Toolbar, IconButton, Menu, MenuItem } from '@mui/material';
+import { Dashboard as DashboardIcon, MenuBook as MenuBookIcon, People as PeopleIcon, BarChart as BarChartIcon, Menu as MenuIcon, AccountCircle } from '@mui/icons-material';
 import withAuth from '../hoc/withAuth';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-// Mock data for book rentals
 const mockBookData = [
   { id: 1, title: '1984', author: 'George Orwell', year: 1949, status: 'Available' },
   { id: 2, title: 'To Kill a Mockingbird', author: 'Harper Lee', year: 1960, status: 'Rented' },
   { id: 3, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', year: 1925, status: 'Available' },
 ];
 
-// Mock data for charts
 const mockChartData = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   revenue: [12000, 15000, 10000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000],
@@ -35,11 +33,25 @@ const Dashboard: React.FC = () => {
   }
 
   const [books, setBooks] = useState<Book[]>([]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
-    // Simulate fetching data from an API
     setTimeout(() => setBooks(mockBookData), 1000);
   }, []);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  }
 
   const combinedRevenueCostData = {
     labels: mockChartData.labels,
@@ -92,6 +104,35 @@ const Dashboard: React.FC = () => {
           <Typography variant="h6" noWrap component="div">
             Book Rental Dashboard
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="account of current user"
+            aria-controls="menu-appbar"
+            aria-haspopup="true"
+            onClick={handleMenu}
+          >
+            <AccountCircle />
+          </IconButton>
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -109,7 +150,7 @@ const Dashboard: React.FC = () => {
         <Toolbar />
         <List>
           {['Dashboard', 'Books', 'Customers', 'Reports'].map((text, index) => (
-            <ListItem>
+            <ListItem key={text}>
               <ListItemIcon>
                 {index === 0 && <DashboardIcon />}
                 {index === 1 && <MenuBookIcon />}

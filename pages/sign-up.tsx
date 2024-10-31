@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { Container, TextField, Button, Typography, Link, Box, FormControl } from '@mui/material'
 import { useAuth } from '../context/AuthContext';
 
-const LoginPage = () => {
+const SignUpPage = () => {
   const router = useRouter()
   const { login } = useAuth();
 
@@ -11,21 +11,26 @@ const LoginPage = () => {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
+    const username = formData.get('username')
     const email = formData.get('email')
     const password = formData.get('password')
+    const confirmPassword = formData.get('confirmPassword')
 
-    const response = await fetch('/api/v1/login', {
+    if (password !== confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    const response = await fetch('/api/v1/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, email, password }),
     })
 
     if (response.ok) {
       const res = await response.json();
       login(res.data?.token, email as string);
       router.push('/');
-    } else if (response.status === 401) {
-      alert('Invalid email or password');
     } else {
       alert('An error occurred');
     }
@@ -53,6 +58,8 @@ const LoginPage = () => {
           borderRadius: 2,
           backgroundColor: '#fff',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+          width: '100%',
+          maxWidth: 400,
         }}
       >
         <img src="/logo.png" alt="EPUBLib Logo" style={{ width: 100, marginBottom: 20 }} />
@@ -60,8 +67,16 @@ const LoginPage = () => {
           EPUBLib
         </Typography>
         <Typography variant="subtitle1" gutterBottom>
-          Please enter your credentials to access the dashboard
+          Create a new account
         </Typography>
+        <TextField
+          type="text"
+          name="username"
+          label="Username"
+          variant="outlined"
+          required
+          sx={{ marginBottom: 2, width: '100%' }}
+        />
         <TextField
           type="email"
           name="email"
@@ -78,8 +93,16 @@ const LoginPage = () => {
           required
           sx={{ marginBottom: 2, width: '100%' }}
         />
+        <TextField
+          type="password"
+          name="confirmPassword"
+          label="Confirm Password"
+          variant="outlined"
+          required
+          sx={{ marginBottom: 2, width: '100%' }}
+        />
         <Button type="submit" variant="contained" color="primary" sx={{ marginTop: 2, width: '100%' }}>
-          Login
+          Sign Up
         </Button>
         <Box
           sx={{
@@ -90,13 +113,8 @@ const LoginPage = () => {
           }}
         >
           <Typography variant="body2">
-            <Link href="/forgot-password" sx={{ textDecoration: 'none' }}>
-              Forgot Password?
-            </Link>
-          </Typography>
-          <Typography variant="body2">
-            <Link href="/sign-up" sx={{ textDecoration: 'none' }}>
-              Sign Up
+            <Link href="/login" sx={{ textDecoration: 'none' }}>
+              Already have an account? Login
             </Link>
           </Typography>
         </Box>
@@ -105,4 +123,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage;
+export default SignUpPage;
